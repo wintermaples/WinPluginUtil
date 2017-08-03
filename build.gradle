@@ -1,0 +1,100 @@
+import java.nio.file.Path
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.nio.file.StandardOpenOption
+
+apply plugin: "java"
+apply plugin: "maven"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
+
+ext {
+    artifactId = "WinPluginUtil"
+    groupId = "net.neonstars"
+    debugServerPath = "D:/Users/wintermaples/Documents/Minecraft/servers/DebugServer"
+    serverBatFileName = "minecraft_server.bat"
+}
+version = "2.4.0"
+
+javadoc {
+    options.charSet = 'UTF-8'
+    options.encoding = 'UTF-8'
+    options.locale = 'en_US'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    }
+    maven {
+        name 'BungeeCord'
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+}
+
+dependencies {
+    compile("org.projectlombok:lombok:1.14.8")
+    compile("org.bukkit:bukkit:1.11.2-R0.1-SNAPSHOT")
+    compile("org.spigotmc:spigot-api:1.11.2-R0.1-SNAPSHOT")
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "file://${System.getProperty('user.home')}/.m2/repository")
+        pom.artifactId = artifactId
+        pom.groupId = groupId
+        pom.version = version
+    }
+}
+
+//ビルド時にアップロード
+build.dependsOn ":uploadArchives"
+
+//古いプラグインをすべて削除
+void removeOldPlugin() {
+    File pluginsDir = new File("${debugServerPath}/plugins/");
+    File[] pluginsDirFiles = pluginsDir.listFiles();
+    for (File file : pluginsDirFiles) {
+        if (file.isFile() && file.getName().contains("${artifactId}")) {
+            Path path = file.toPath();
+            Files.delete(path);
+        }
+    }
+}
+
+//生成されたプラグインをコピー
+void copyPlugin() {
+    String fixedGroupId = groupId.replaceAll("\\.", "/")
+    Path src = new File("${System.getProperty('user.home')}/.m2/repository/${fixedGroupId}/${artifactId}/${version}/${artifactId}-${version}.jar").toPath();
+    Path dest = new File("${debugServerPath}/plugins/${artifactId}-${version}.jar").toPath();
+    Files.copy(src, dest, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+    println "Copied plugin."
+}
+
+//サーバー起動メソッド
+void executeDebugServer() {
+    "cmd /c start ${debugServerPath}/${serverBatFileName} 1.8-R3".execute()
+    println "Executed server."
+}
+
+//デバッグ
+task debug << {
+    removeOldPlugin()
+    copyPlugin()
+    executeDebugServer()
+}
+//ビルド時
+build.doLast {
+    removeOldPlugin()
+    copyPlugin()
+}
+debug.dependsOn ":build"
+
+//デバッグサーバーを起動
+task executeDebugServer << {
+    executeDebugServer()
+}

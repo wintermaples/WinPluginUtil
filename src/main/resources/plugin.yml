@@ -1,0 +1,8 @@
+name: WinPluginUtil
+main: net.neonstars.util.Main
+version: 3.0.0
+
+commands:
+  keepweather:
+    description: ""
+    permission-message: "You don't have permission."
