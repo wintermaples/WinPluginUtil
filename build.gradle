@@ -13,7 +13,7 @@ targetCompatibility = 1.8
 ext {
     artifactId = "WinPluginUtil"
     groupId = "net.neonstars"
-    debugServerPath = "D:/Users/wintermaples/Documents/Minecraft/servers/DebugServer"
+    debugServerPath = "C:/Users/wintermaples/Documents/Minecraft/servers/DebugServer"
     serverBatFileName = "minecraft_server.bat"
 }
 version = "3.0.0"
