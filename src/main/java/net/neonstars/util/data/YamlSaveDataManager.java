@@ -21,6 +21,11 @@ public abstract class YamlSaveDataManager implements SaveDataManager {
     this.file = file;
   }
 
+  public YamlSaveDataManager(File file, DeserializableClassRegisterer registerer) {
+    this.file = file;
+    registerer.registerDeserializableClasses();
+  }
+
   @Override
   public void load() throws IOException {
     if (!file.getParentFile().exists()) {
@@ -43,6 +48,7 @@ public abstract class YamlSaveDataManager implements SaveDataManager {
     }
 
     try {
+      data = new YamlConfiguration();
       data.load(file);
     } catch (InvalidConfigurationException e) {
       e.printStackTrace();

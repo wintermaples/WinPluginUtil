@@ -64,9 +64,10 @@ public class Stopwatch {
    * @return フォーマット済みのタイム
    */
   public String formattedTime(String format) {
+    int tickSecond = (time % 20) * 5;
     int second = time / 20 % 60;
     int min = time / (20 * 60);
-    return String.format(format, min, second);
+    return String.format(format, min, second, tickSecond);
   }
 
   /**

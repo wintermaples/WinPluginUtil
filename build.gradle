@@ -16,7 +16,7 @@ ext {
     debugServerPath = "D:/Users/wintermaples/Documents/Minecraft/servers/DebugServer"
     serverBatFileName = "minecraft_server.bat"
 }
-version = "2.4.0"
+version = "3.0.0"
 
 javadoc {
     options.charSet = 'UTF-8'
